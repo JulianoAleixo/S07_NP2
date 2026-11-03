@@ -1,0 +1,20 @@
+export const techItems = [
+    { text: "TypeScript", alt: "TypeScript", image: "/icons/typescript.svg" },
+    { text: "React", alt: "React", image: "/icons/react.svg" },
+    {
+        text: "Tailwind CSS",
+        alt: "Tailwind CSS",
+        image: "/icons/tailwindcss.svg",
+    },
+    { text: "Astro", alt: "Astro", image: "/icons/astro.svg" },
+    { text: "Node.js", alt: "Node.js", image: "/icons/nodejs.svg" },
+    { text: "Python", alt: "Python", image: "/icons/python.svg" },
+    { text: "Flask", alt: "Flask", image: "/icons/flask.svg" },
+    { text: "JavaScript", alt: "JavaScript", image: "/icons/javascript.svg" },
+    { text: "Java", alt: "Java", image: "/icons/java.svg" },
+    { text: "HTML5", alt: "HTML5", image: "/icons/html5.svg" },
+    { text: "CSS3", alt: "CSS3", image: "/icons/css3.svg" },
+    { text: "PostgreSQL", alt: "PostgreSQL", image: "/icons/postgresql.svg" },
+    { text: "Git", alt: "Git", image: "/icons/git.svg" },
+    { text: "Docker", alt: "Docker", image: "/icons/docker.svg" },
+];

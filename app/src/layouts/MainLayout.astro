@@ -1,0 +1,28 @@
+---
+import "../styles/global.css";
+import { techItems } from "../constants/techItems";
+const { title = "Dev Juliano Aleixo" } = Astro.props;
+---
+
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/code.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        {
+            techItems.map((item) => (
+                <link rel="preload" as="image" href={item.image} />
+            ))
+        }
+        <title>{title}</title>
+    </head>
+    <body class="bg-neutral-900 text-white">
+        <slot />
+    </body>
+</html>
