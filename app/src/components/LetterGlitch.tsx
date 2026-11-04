@@ -45,9 +45,19 @@ const LetterGlitch = ({
         return glitchColors[Math.floor(Math.random() * glitchColors.length)];
     };
 
-    const hexToRgb = (hex: string) => {
+    const colorToRgb = (color: string) => {
+        // interpolateColor grava rgb(...), então a cor atual pode estar nesse formato.
+        const rgb = /^rgb\((\d+), (\d+), (\d+)\)$/.exec(color);
+        if (rgb) {
+            return {
+                r: Number(rgb[1]),
+                g: Number(rgb[2]),
+                b: Number(rgb[3]),
+            };
+        }
+
         const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        hex = hex.replace(shorthandRegex, (_m, r, g, b) => {
+        const hex = color.replace(shorthandRegex, (_m, r, g, b) => {
             return r + r + g + g + b + b;
         });
 
@@ -163,8 +173,8 @@ const LetterGlitch = ({
                 letter.colorProgress += 0.05;
                 if (letter.colorProgress > 1) letter.colorProgress = 1;
 
-                const startRgb = hexToRgb(letter.color);
-                const endRgb = hexToRgb(letter.targetColor);
+                const startRgb = colorToRgb(letter.color);
+                const endRgb = colorToRgb(letter.targetColor);
                 if (startRgb && endRgb) {
                     letter.color = interpolateColor(
                         startRgb,
@@ -218,6 +228,7 @@ const LetterGlitch = ({
         window.addEventListener("resize", handleResize);
 
         return () => {
+            clearTimeout(resizeTimeout);
             cancelAnimationFrame(animationRef.current!);
             window.removeEventListener("resize", handleResize);
         };
