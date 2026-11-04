@@ -15,18 +15,21 @@ const Footer = () => {
                     <div className="flex flex-row justify-center align-center gap-4">
                         <SocialButton
                             href="https://www.linkedin.com/in/dev-juliano-aleixo/"
+                            ariaLabel="LinkedIn"
                             className="h-8 w-8 bg-transparent! border-none!"
                         >
                             <Linkedin className="size-8" />
                         </SocialButton>
                         <SocialButton
                             href="https://github.com/JulianoAleixo"
+                            ariaLabel="GitHub"
                             className="h-8 w-8 bg-transparent! border-none!"
                         >
                             <Github className="size-8" />
                         </SocialButton>
                         <SocialButton
                             href="https://mail.google.com/mail/?view=cm&fs=1&to=juliano.aleixo@gmail.com"
+                            ariaLabel="Send email"
                             className="h-8 w-8 bg-transparent! border-none!"
                         >
                             <Gmail className="size-8" />

@@ -44,18 +44,21 @@ const Hero = () => {
                             <div className="flex items-center gap-3 mt-2">
                                 <SocialButton
                                     href="https://www.linkedin.com/in/dev-juliano-aleixo/"
+                                    ariaLabel="LinkedIn"
                                     className="h-16 w-16"
                                 >
                                     <Linkedin className="size-8" />
                                 </SocialButton>
                                 <SocialButton
                                     href="https://github.com/JulianoAleixo"
+                                    ariaLabel="GitHub"
                                     className="h-16 w-16"
                                 >
                                     <Github className="size-8" />
                                 </SocialButton>
                                 <SocialButton
                                     href="https://mail.google.com/mail/?view=cm&fs=1&to=juliano.aleixo@gmail.com"
+                                    ariaLabel="Send email"
                                     className="h-16 w-16"
                                 >
                                     <Gmail className="size-8" />
