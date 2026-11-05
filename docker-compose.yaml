@@ -1,0 +1,16 @@
+services:
+  jenkins:
+    build: ./jenkins
+    ports:
+      - "8080:8080"
+    shm_size: "2gb"
+    environment:
+      JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+      REPO_URL: ${REPO_URL}
+      REPO_BRANCH: ${REPO_BRANCH}
+    volumes:
+      - jenkins_home:/var/jenkins_home
+
+volumes:
+  jenkins_home:
