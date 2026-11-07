@@ -12,5 +12,13 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
 
+  api:
+    build: ./api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
 volumes:
   jenkins_home:
