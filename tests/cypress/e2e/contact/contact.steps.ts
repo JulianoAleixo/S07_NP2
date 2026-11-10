@@ -102,6 +102,27 @@ When(
   },
 );
 
+When("I submit the contact form with valid data", () => {
+  cy.fixture("contact").then((contact) => {
+    MainPage.fillContactForm({
+      name: contact.validName,
+      email: contact.validEmail,
+      message: contact.validMessage,
+    });
+    MainPage.clickButton("Submit");
+  });
+});
+
+// "@emailjs" é o intercept de support/e2e.ts: o pedido chega nele, e não ao EmailJS.
+Then("the message should be sent to EmailJS once", () => {
+  cy.wait("@emailjs");
+  cy.get("@emailjs.all").should("have.length", 1);
+});
+
+Then("I should see the success message", () => {
+  MainPage.containsText("Message sent successfully!").should("be.visible");
+});
+
 Then("I should not see the success message", () => {
   cy.get("body").should("not.contain", "Message sent successfully!");
 });
