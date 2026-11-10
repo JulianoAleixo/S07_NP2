@@ -12,6 +12,12 @@ Feature: Contact section
     Then I should see the contact invitation text
     And I should see the "Submit" button
 
+  @TC-033 @valid
+  Scenario: Sending the contact form successfully
+    When I submit the contact form with valid data
+    Then the message should be sent to EmailJS once
+    And I should see the success message
+
   @TC-006 @valid
   Scenario: Displaying the location
     Then I should see the location "Brazil, Minas Gerais"
