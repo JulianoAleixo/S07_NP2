@@ -74,6 +74,7 @@ pipeline {
                 sh '''
                     (cd api && npm run build)
                     (cd app && npm run build)
+                    rm -rf artifacts
                     mkdir -p artifacts
                     tar -czf artifacts/s07-np2-${BUILD_NUMBER}.tar.gz \
                         app/dist api/dist api/package.json api/package-lock.json
