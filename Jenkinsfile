@@ -16,7 +16,7 @@ pipeline {
         )
     }
 
-    // TODO: container "app" and "api"
+    // "app" e "api" são serviços do docker-compose.yaml, alcançados pelo nome na rede interna.
     environment {
         CYPRESS_BASE_URL = 'http://app'
         TARGET_URL       = 'http://app/'
@@ -84,13 +84,28 @@ pipeline {
 
     post {
         always {
-            // TODO: Send artifacts via email
             archiveArtifacts(
                 artifacts: 'artifacts/*.tar.gz, tests/cypress/reports/**, tests/cypress/screenshots/**, tests/Performance/reports/**, api/coverage/**, app/coverage/**',
                 allowEmptyArchive: true,
                 fingerprint: true
             )
             junit allowEmptyResults: true, testResults: 'api/reports/junit.xml, app/reports/junit.xml'
+
+            // Roda depois do arquivamento, para o link do e-mail já mostrar os artefatos.
+            // returnStatus evita que uma falha no envio mude o resultado real do build.
+            withEnv(["BUILD_STATUS=${currentBuild.currentResult}"]) {
+                script {
+                    def code = sh(returnStatus: true, script: '''
+                        (cd scripts/notify && npm ci) &&
+                        node scripts/notify/send-email.js \
+                            artifacts/*.tar.gz \
+                            tests/cypress/reports/index.html
+                    ''')
+                    if (code != 0) {
+                        echo "Falha ao enviar o e-mail de notificação (código ${code})"
+                    }
+                }
+            }
         }
     }
 }
