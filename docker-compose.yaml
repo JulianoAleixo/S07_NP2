@@ -9,11 +9,17 @@ services:
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
       REPO_URL: ${REPO_URL}
       REPO_BRANCH: ${REPO_BRANCH}
+      NOTIFY_EMAIL: ${NOTIFY_EMAIL}
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_FROM: ${SMTP_FROM:-jenkins@localhost}
     volumes:
       - jenkins_home:/var/jenkins_home
     depends_on:
       app:
         condition: service_healthy
+      mailpit:
+        condition: service_started
 
   api:
     build: ./api
@@ -42,5 +48,16 @@ services:
       timeout: 3s
       retries: 3
 
+  mailpit:
+    image: axllent/mailpit:v1.29.6
+    ports:
+      - "8025:8025"
+    environment:
+      # Grava os e-mails em arquivo para sobreviverem a reinícios.
+      MP_DATABASE: /data/mailpit.db
+    volumes:
+      - mailpit_data:/data
+
 volumes:
   jenkins_home:
+  mailpit_data:
