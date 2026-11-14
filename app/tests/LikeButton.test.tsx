@@ -53,6 +53,8 @@ describe("LikeButton", () => {
 
     afterEach(() => {
         vi.useRealTimers();
+        // Desfaz o crypto falso; o fetch falso é recriado no beforeEach.
+        vi.unstubAllGlobals();
     });
 
     describe("loading", () => {
@@ -116,6 +118,19 @@ describe("LikeButton", () => {
             expect(fetchMock.mock.calls[1][1].body).toBe(
                 JSON.stringify({ deviceId: id }),
             );
+        });
+
+        // Em HTTP fora do localhost (como http://app no pipeline), o navegador não tem crypto.randomUUID.
+        it("creates a hex id when crypto.randomUUID is not available", async () => {
+            vi.stubGlobal("crypto", {
+                getRandomValues: crypto.getRandomValues.bind(crypto),
+            });
+
+            await renderLoaded({ count: 0, liked: false });
+
+            const id = localStorage.getItem("deviceId");
+            expect(id).toMatch(/^[0-9a-f]{32}$/);
+            expect(fetchMock.mock.calls[0][0]).toContain(id);
         });
 
         it("reuses an id that already exists", async () => {

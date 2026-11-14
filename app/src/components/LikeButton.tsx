@@ -4,10 +4,20 @@ import { Heart } from "lucide-react";
 import { useState } from "react";
 import { fetchLikes, sendLike } from "../lib/likesApi";
 
+// O navegador só oferece crypto.randomUUID em contexto seguro (HTTPS ou localhost).
+// Em HTTP por outro endereço, como http://app no pipeline, usa getRandomValues, que existe sempre.
+const newDeviceId = (): string => {
+    if (typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+};
+
 const getDeviceId = (): string => {
     let id = localStorage.getItem("deviceId");
     if (!id) {
-        id = crypto.randomUUID();
+        id = newDeviceId();
         localStorage.setItem("deviceId", id);
     }
     return id;
