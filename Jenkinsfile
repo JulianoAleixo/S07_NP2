@@ -99,7 +99,7 @@ pipeline {
                         (cd scripts/notify && npm ci) &&
                         node scripts/notify/send-email.js \
                             artifacts/*.tar.gz \
-                            tests/cypress/reports/html/index.html
+                            tests/cypress/reports/index.html
                     ''')
                     if (code != 0) {
                         echo "Falha ao enviar o e-mail de notificação (código ${code})"
