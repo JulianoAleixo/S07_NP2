@@ -11,11 +11,33 @@ services:
       REPO_BRANCH: ${REPO_BRANCH}
     volumes:
       - jenkins_home:/var/jenkins_home
+    depends_on:
+      app:
+        condition: service_healthy
 
   api:
     build: ./api
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  app:
+    build:
+      context: ./app
+      args:
+        PUBLIC_EMAILJS_SERVICE_ID: test_service
+        PUBLIC_EMAILJS_TEMPLATE_ID: test_template
+        PUBLIC_EMAILJS_PUBLIC_KEY: test_public_key
+    ports:
+      - "4321:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      # Passa pelo proxy do nginx: confirma que o app alcança a API.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/api/health"]
       interval: 10s
       timeout: 3s
       retries: 3
