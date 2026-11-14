@@ -15,6 +15,10 @@ export default defineConfig({
       html: true,
       json: true,
       charts: true,
+      // Gera um único index.html, com scripts, estilos e capturas dentro dele.
+      // Sem isso, o relatório depende da pasta assets/ e abre em branco quando vai sozinho no e-mail.
+      inlineAssets: true,
+      embeddedScreenshots: true,
     },
     async setupNodeEvents(
       on: Cypress.PluginEvents,
