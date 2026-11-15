@@ -1,6 +1,6 @@
 services:
   jenkins:
-    build: ./jenkins
+    image: julianomaleixo/s07-np2-jenkins:latest
     ports:
       - "8080:8080"
     shm_size: "2gb"
