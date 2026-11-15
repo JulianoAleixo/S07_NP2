@@ -94,12 +94,12 @@ pipeline {
 
             // Roda depois do arquivamento, para o link do e-mail já mostrar os artefatos.
             // returnStatus evita que uma falha no envio mude o resultado real do build.
+            // O pacote não vai anexado: o Gmail bloqueia compactados com .js. Ele fica nos artefatos, pelo link.
             withEnv(["BUILD_STATUS=${currentBuild.currentResult}"]) {
                 script {
                     def code = sh(returnStatus: true, script: '''
                         (cd scripts/notify && npm ci) &&
                         node scripts/notify/send-email.js \
-                            artifacts/*.tar.gz \
                             tests/cypress/reports/index.html
                     ''')
                     if (code != 0) {
