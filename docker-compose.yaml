@@ -10,8 +10,11 @@ services:
       REPO_URL: ${REPO_URL}
       REPO_BRANCH: ${REPO_BRANCH}
       NOTIFY_EMAIL: ${NOTIFY_EMAIL}
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
+      # Sem SMTP_HOST no .env, o e-mail vai para o Mailpit. Com ele, para um servidor real.
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
       SMTP_FROM: ${SMTP_FROM:-jenkins@localhost}
     volumes:
       - jenkins_home:/var/jenkins_home
