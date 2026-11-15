@@ -86,7 +86,7 @@ pipeline {
     post {
         always {
             archiveArtifacts(
-                artifacts: 'artifacts/*.tar.gz, tests/cypress/reports/**, tests/cypress/screenshots/**, tests/Performance/reports/**, api/coverage/**, app/coverage/**',
+                artifacts: 'artifacts/*.tar.gz, tests/cypress/reports/**, tests/cypress/screenshots/**, tests/Performance/reports/**, api/coverage/**, app/coverage/**, api/reports/**, app/reports/**',
                 allowEmptyArchive: true,
                 fingerprint: true
             )
