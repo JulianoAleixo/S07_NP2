@@ -3,6 +3,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
     esbuild: { jsx: "automatic" },
     test: {
+        reporters: ["default", "junit"],
+        outputFile: { junit: "reports/junit.xml" },
         environment: "jsdom",
         setupFiles: ["./tests/setup.ts"],
         include: ["tests/**/*.test.{ts,tsx}"],
