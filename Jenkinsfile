@@ -16,10 +16,13 @@ pipeline {
         )
     }
 
-    // "app" e "api" são serviços do docker-compose.yaml, alcançados pelo nome na rede interna.
     environment {
-        CYPRESS_BASE_URL = 'http://app'
-        TARGET_URL       = 'http://app/'
+        // Cada build sobe o próprio stack (docker-compose.test.yaml), com nome único.
+        TEST_STACK       = "s07-test-${env.BUILD_NUMBER}"
+        // Pelo nome do container, e não por "app": o Jenkins também está na rede do stack local,
+        // onde existe outro "app", e o nome curto poderia apontar para ele.
+        CYPRESS_BASE_URL = "http://s07-test-${env.BUILD_NUMBER}-app-1"
+        TARGET_URL       = "http://s07-test-${env.BUILD_NUMBER}-app-1/"
         CI               = 'true'
     }
 
@@ -54,10 +57,18 @@ pipeline {
             }
         }
 
+        stage('Subir stack de teste') {
+            steps {
+                // Constrói app e api a partir deste commit e espera os healthchecks passarem (--wait).
+                sh 'docker compose -f docker-compose.test.yaml -p "$TEST_STACK" up -d --build --wait'
+                // Coloca o container do Jenkins na rede do stack de teste, para alcançar o app.
+                sh 'docker network connect "${TEST_STACK}_default" "$(hostname)"'
+            }
+        }
+
         stage('Testes E2E (Cypress)') {
             steps {
                 sh 'rm -rf tests/cypress/reports tests/cypress/screenshots tests/cypress/videos'
-                sh 'curl -fsS --retry 5 --retry-delay 2 --retry-all-errors http://app/api/health'
                 dir('tests') { sh 'npx cypress run' }
             }
         }
@@ -107,6 +118,13 @@ pipeline {
                     }
                 }
             }
+
+            // Derruba o stack de teste mesmo se o build falhou: containers, rede, volumes e as imagens deste build.
+            // "|| true" porque o stack pode nem ter subido, e a limpeza não deve mudar o resultado do build.
+            sh '''
+                docker network disconnect "${TEST_STACK}_default" "$(hostname)" || true
+                docker compose -f docker-compose.test.yaml -p "$TEST_STACK" down -v --rmi local || true
+            '''
         }
     }
 }
