@@ -1,6 +1,6 @@
 services:
   jenkins:
-    image: julianomaleixo/s07-np2-jenkins:latest
+    image: julianomaleixo/s07-np2-jenkins:1.0.1
     ports:
       - "8080:8080"
     shm_size: "2gb"
@@ -18,9 +18,12 @@ services:
       SMTP_FROM: ${SMTP_FROM:-jenkins@localhost}
     volumes:
       - jenkins_home:/var/jenkins_home
+      # Dá ao pipeline o Docker do host: ele constrói e sobe o próprio stack de teste a cada build.
+      - /var/run/docker.sock:/var/run/docker.sock
+    # O socket pertence a um grupo (0 no Docker Desktop); o usuário jenkins entra nele sem virar root.
+    group_add:
+      - "${DOCKER_GID:-0}"
     depends_on:
-      app:
-        condition: service_healthy
       mailpit:
         condition: service_started
 

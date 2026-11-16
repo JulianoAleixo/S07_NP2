@@ -1,6 +1,9 @@
 ARG K6_VERSION=1.0.0
 FROM grafana/k6:${K6_VERSION} AS k6
 
+# Só o cliente Docker: os comandos do pipeline são executados pelo Docker do host, pelo socket montado no compose.
+FROM docker:29.7.2-cli AS docker
+
 FROM jenkins/jenkins:lts-jdk21
 
 USER root
@@ -15,6 +18,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=k6 /usr/bin/k6 /usr/bin/k6
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
+# compose sobe o stack de teste; buildx é usado pelo compose para construir as imagens.
+COPY --from=docker /usr/local/libexec/docker/cli-plugins/docker-compose /usr/local/libexec/docker/cli-plugins/docker-compose
+COPY --from=docker /usr/local/libexec/docker/cli-plugins/docker-buildx /usr/local/libexec/docker/cli-plugins/docker-buildx
 
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 ENV CASC_JENKINS_CONFIG=/usr/share/jenkins/casc.yaml
