@@ -1,6 +1,6 @@
 services:
   jenkins:
-    image: julianomaleixo/s07-np2-jenkins:1.0.1
+    image: julianomaleixo/s07-np2-jenkins:1.0.2
     ports:
       - "8080:8080"
     shm_size: "2gb"
@@ -8,7 +8,6 @@ services:
       JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
       REPO_URL: ${REPO_URL}
-      REPO_BRANCH: ${REPO_BRANCH}
       NOTIFY_EMAIL: ${NOTIFY_EMAIL}
       # Sem SMTP_HOST no .env, o e-mail vai para o Mailpit. Com ele, para um servidor real.
       SMTP_HOST: ${SMTP_HOST:-mailpit}
