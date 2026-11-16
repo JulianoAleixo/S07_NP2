@@ -16,21 +16,43 @@ unclassified:
         url: "${JENKINS_URL:-http://localhost:8080/}"
 
 jobs:
+    # Multibranch: o Jenkins descobre as branches do repositório e cria um job para cada uma,
+    # todas usando o próprio Jenkinsfile.
     - script: |
-          pipelineJob('s07-np2') {
-            description('Pipeline')
-            definition {
-              cpsScm {
-                scm {
+          multibranchPipelineJob('s07-np2') {
+            description('Pipeline: um job por branch do repositório')
+            branchSources {
+              branchSource {
+                source {
                   git {
-                    remote {
-                      url('${REPO_URL}')
+                    // Identificador fixo da origem; mudar entre reinícios recria todos os jobs.
+                    id('s07-np2-repo')
+                    remote('${REPO_URL}')
+                    traits {
+                      // Sem isso, o Jenkins não lista nenhuma branch.
+                      gitBranchDiscovery()
                     }
-                    branch('${REPO_BRANCH:-main}')
                   }
                 }
+              }
+            }
+            factory {
+              workflowBranchProjectFactory {
                 scriptPath('Jenkinsfile')
-                lightweight(true)
+              }
+            }
+            // Disparo automático: a cada 5 minutos, varre o repositório, cria jobs para
+            // branches novas e roda as que receberam commits. Polling, e não webhook,
+            // porque o GitHub não alcança um Jenkins em localhost.
+            triggers {
+              periodicFolderTrigger {
+                interval('5m')
+              }
+            }
+            // Apaga o job de uma branch que foi deletada no GitHub.
+            orphanedItemStrategy {
+              discardOldItems {
+                numToKeep(0)
               }
             }
           }

@@ -17,12 +17,14 @@ pipeline {
     }
 
     environment {
-        // Cada build sobe o próprio stack (docker-compose.test.yaml), com nome único.
-        TEST_STACK       = "s07-test-${env.BUILD_NUMBER}"
+        // Cada build sobe o próprio stack (docker-compose.test.yaml). O nome vem do executor, e não do
+        // número do build: no multibranch, cada branch tem a própria numeração, e dois builds #3 de
+        // branches diferentes colidiriam. Dois builds simultâneos nunca usam o mesmo executor.
+        TEST_STACK       = "s07-test-${env.EXECUTOR_NUMBER}"
         // Pelo nome do container, e não por "app": o Jenkins também está na rede do stack local,
         // onde existe outro "app", e o nome curto poderia apontar para ele.
-        CYPRESS_BASE_URL = "http://s07-test-${env.BUILD_NUMBER}-app-1"
-        TARGET_URL       = "http://s07-test-${env.BUILD_NUMBER}-app-1/"
+        CYPRESS_BASE_URL = "http://s07-test-${env.EXECUTOR_NUMBER}-app-1"
+        TARGET_URL       = "http://s07-test-${env.EXECUTOR_NUMBER}-app-1/"
         CI               = 'true'
     }
 
@@ -59,6 +61,8 @@ pipeline {
 
         stage('Subir stack de teste') {
             steps {
+                // O executor é reaproveitado: remove o que tenha sobrado de um build interrompido.
+                sh 'docker compose -f docker-compose.test.yaml -p "$TEST_STACK" down -v --rmi local || true'
                 // Constrói app e api a partir deste commit e espera os healthchecks passarem (--wait).
                 sh 'docker compose -f docker-compose.test.yaml -p "$TEST_STACK" up -d --build --wait'
                 // Coloca o container do Jenkins na rede do stack de teste, para alcançar o app.
